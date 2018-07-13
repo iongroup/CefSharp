@@ -105,7 +105,10 @@ namespace CefSharp
 
         auto isObjectCachedFunction = CefV8Value::CreateFunction("IsObjectCached", new RegisterBoundObjectHandler(_registerBoundObjectRegistry, _javascriptObjects, nullptr));
         cefSharpObj->SetValue("IsObjectCached", isObjectCachedFunction, CefV8Value::PropertyAttribute::V8_PROPERTY_ATTRIBUTE_NONE);
-    };
+	
+		auto processId = CefV8Value::CreateInt(GetCurrentProcessId());
+		cefSharpObj->SetValue("RendererPid", processId, CefV8Value::PropertyAttribute::V8_PROPERTY_ATTRIBUTE_READONLY);
+	};
 
     void CefAppUnmanagedWrapper::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
     {
