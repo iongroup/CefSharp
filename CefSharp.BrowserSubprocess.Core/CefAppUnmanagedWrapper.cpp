@@ -1,4 +1,4 @@
-// Copyright © 2014 The CefSharp Authors. All rights reserved.
+﻿// Copyright © 2014 The CefSharp Authors. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
@@ -157,6 +157,9 @@ namespace CefSharp
         auto contextCreatedMessage = CefProcessMessage::Create(kOnContextCreatedRequest);
 
         frame->SendProcessMessage(CefProcessId::PID_BROWSER, contextCreatedMessage);
+	
+		auto processId = CefV8Value::CreateInt(GetCurrentProcessId());
+		cefSharpObj->SetValue("RendererPid", processId, CefV8Value::PropertyAttribute::V8_PROPERTY_ATTRIBUTE_READONLY);
     };
 
     void CefAppUnmanagedWrapper::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
