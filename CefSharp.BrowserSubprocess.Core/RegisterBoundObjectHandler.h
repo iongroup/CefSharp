@@ -124,30 +124,61 @@ namespace CefSharp
                             auto params = CefListValue::Create();
 
                             auto boundObjectRequired = false;
-                            auto cachedObjects = gcnew List<JavascriptObject^>();
+							auto ignoreCache = false;
+							auto cachedObjects = gcnew List<JavascriptObject^>();
+							auto objectCount = 0;
 
                             if (arguments.size() > 0)
                             {
-                                for (auto i = 0; i < arguments.size(); i++)
-                                {
-                                    auto objectName = arguments[i]->GetStringValue();
+								objectCount = (int)arguments.size();
 
-                                    //Check if the object has already been bound
-                                    if (!global->HasValue(objectName))
-                                    {
-                                        //If no matching object found then we'll add the object name to the list
-                                        boundObjectRequired = true;
-                                        params->SetString(i, objectName);
+								//If first argument is an object, we'll see if it contains config values
+								if (arguments[0]->IsObject())
+								{
+									if (arguments[0]->HasValue("IgnoreCache"))
+									{
+										auto ignore = arguments[0]->GetValue("IgnoreCache");
+										if (ignore->IsBool())
+										{
+											ignoreCache = ignore->GetBoolValue();
+										}
+									}
 
-                                        auto managedObjectName = StringUtils::ToClr(objectName);
+									//If we have a config object then we remove that from the count
+									objectCount = objectCount - 1;
+								}
 
-                                        JavascriptObject^ obj;
-                                        if (_javascriptObjects->TryGetValue(managedObjectName, obj))
-                                        {
-                                            cachedObjects->Add(obj);
-                                        }
-                                    }								
-                                }
+								for (auto i = 0; i < arguments.size(); i++)
+								{
+									//Validate arg as being a string
+									if (arguments[i]->IsString())
+									{
+										auto objectName = arguments[i]->GetStringValue();
+										auto managedObjectName = StringUtils::ToClr(objectName);
+										auto alreadyBound = global->HasValue(objectName);
+										auto cached = false;
+
+										//Check if the object has already been bound
+										if (alreadyBound)
+										{
+											cached = _javascriptObjects->ContainsKey(managedObjectName);
+										}
+										else
+										{
+											//If no matching object found then we'll add the object name to the list
+											boundObjectRequired = true;
+											params->SetString(i, objectName);
+
+											JavascriptObject^ obj;
+											if (_javascriptObjects->TryGetValue(managedObjectName, obj))
+											{
+												cachedObjects->Add(obj);
+
+												cached = true;
+											}
+										}
+									}
+								}
                             }
                             else
                             {
@@ -155,11 +186,11 @@ namespace CefSharp
                                 boundObjectRequired = true;
                             }
 
-                            if (boundObjectRequired)
+                            if (boundObjectRequired || ignoreCache)
                             {
                                 //If the number of cached objects matches the number of args
                                 //then we'll immediately bind the cached objects
-                                if (cachedObjects->Count == (int)arguments.size())
+                                if (cachedObjects->Count == (int)arguments.size() && ignoreCache == false)
                                 {
                                     auto frame = context->GetFrame();
                                     if (frame.get())
