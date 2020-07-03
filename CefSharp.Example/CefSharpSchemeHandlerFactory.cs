@@ -35,6 +35,8 @@ namespace CefSharp.Example
                 { "/bootstrap/bootstrap.min.css", Resources.bootstrap_min_css },
                 { "/bootstrap/bootstrap.min.js", Resources.bootstrap_min_js },
 
+                { "/BoundObjectAsync_Debug.html", Resources.BoundObjectAsync_Debug },
+
                 { "/BindingTest.html", Resources.BindingTest },
                 { "/BindingTestSingle.html", Resources.BindingTestSingle },
                 { "/LegacyBindingTest.html", Resources.LegacyBindingTest },

@@ -1,0 +1,24 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h2>Test CefSharp.BindObjectAsync</h2>
+        <p id="status1"></p>
+        <p id="status2"></p>
+
+        <script>
+            window.onload = async () => {
+                var hasCefSharp = typeof window.CefSharp !== 'undefined';
+                var hasBindObjectAsync = hasCefSharp && typeof window.CefSharp.BindObjectAsync !== 'undefined';
+                document.getElementById("status1").textContent = `CefSharp avail: ${hasCefSharp}, BoundObjectAsync avail: ${hasBindObjectAsync}`;
+
+                if (hasBindObjectAsync) {
+                    document.getElementById("status2").textContent = `Calling BindObjectAsync...`;
+                    await window.CefSharp.BindObjectAsync("test");
+                    document.getElementById("status2").textContent = `BindObjectAsync called OK`;
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -114,6 +114,16 @@ namespace CefSharp.WinForms.Example
             browserTabControl.SelectedTab = tabPage;
 
             browserTabControl.ResumeLayout(true);
+
+            // Create a floating MFC browser as well 
+            Form form = new Form();
+            form.Width = 800;
+            form.Height= 600;
+            form.Text = "CEF created directly in MFC";
+            var ctrl = new CefUnmanaged.Control(url);
+            ctrl.Dock = DockStyle.Fill;
+            form.Controls.Add(ctrl);
+            form.Show();
         }
 
         private void ExitMenuItemClick(object sender, EventArgs e)
